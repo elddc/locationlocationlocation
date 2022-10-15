@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np 
 import meteostat
 import pvlib
+import requests
 class Location:
     """
     Location that user picked and the weather + solar parameters for that location
@@ -14,11 +15,11 @@ class Location:
         self.area = 0.0
         self.weather_df = None
         self.solar_df = None
-        self.start = datetime(2000, 1, 1)
-        self.end = datetime(2021, 12, 31)
+        self.start = datetime.datetime(2005, 1, 1)
+        self.end = datetime.datetime(2015, 12, 31)
         self.get_area()
         self.get_weather_data()
-        self.get_solar_data()
+        #self.get_solar_data()
     def get_area(self):
         """
         Calculate the area of the circle
@@ -27,10 +28,12 @@ class Location:
     def get_weather_data(self):
         """
         """
-        station = meteostat.Point(self.lat, self.lon).nearest_stations().fetch(1)
+        stations = meteostat.Stations()
+        stations = stations.nearby(self.lat, self.lon)
+        station = stations.fetch(1)
         
-        monthly_data = meteostat.Monthly(station, self.start, self.end).fetch()
-        average_values = monthly_data.mean()
+        hourly_data = meteostat.Hourly(station, self.start, self.end).fetch()
+        average_values = hourly_data.mean().dropna()
         self.weather_df = pd.DataFrame(average_values)
     def get_solar_data(self):
         """
@@ -46,23 +49,28 @@ class Location:
     def get_avg_air_temp(self) -> float:
         """
         """
-        return 0.0
+        return self.weather_df['temp'].values[0]
     def get_avg_humidity(self) -> float:
         """
         """
-        return 0.0
+        return self.weather_df['rhum'].values[0]
     def get_avg_barometric_pressure(self) -> float:
         """
         """
-        return 0.0
+        return self.weather_df['pres'].values[0]
     def get_altitude(self) -> float:
         """
+        Adapted from https://stackoverflow.com/questions/19513212/can-i-get-the-altitude-with-geopy-in-python-with-longitude-latitude
         """
-        return 0.0
+        query = ('https://api.open-elevation.com/api/v1/lookup'f'?locations={self.lat},{self.lon}')
+        r = requests.get(query).json()  # json object, various ways you can extract value
+        # one approach is to use pandas json functionality:
+        altitude = pd.json_normalize(r, 'results')['elevation'].values[0]
+        return altitude
     def get_avg_wind_speed(self) -> float:
         """
         """
-        return 0.0
+        return self.weather_df['wspd'].values[0]
     def get_avg_air_density(self) -> float:
         """
         """
