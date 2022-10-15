@@ -1,7 +1,12 @@
 import {Wrapper, Status} from '@googlemaps/react-wrapper';
 import {useState, useRef, useEffect} from 'react';
 
-const Map = () => {
+// get latitude with markerData.position.lat();
+// get longitiude with markerData.position.lng();
+
+const LocationPage = () => {
+  const [markerData, setMarkerData] = useState(null);
+
   const render = (status) => {
     if (status !== Status.SUCCESS)
       return 'loading';
@@ -9,23 +14,43 @@ const Map = () => {
 
   return (
     <Wrapper apiKey={'AIzaSyBZUH8Ld_4GB9ct-Vc-rLDV_fBMQFm2pKs'} render={render}>
-      Map:
-      <MapInner />
+      Click to set location <br/><br/>
+      <Map setMarkerData={setMarkerData}/>
+      {markerData && <Marker data={markerData}/>}
     </Wrapper>
   );
 }
 
-const MapInner = () => {
+const Map = ({setMarkerData}) => {
   const ref = useRef();
-  const center = { lat: 40.1138069, lng: -88.2270992 }; //UIUC coordinates
-  const zoom = 3.5;
 
   useEffect(() => {
-    if (ref.current)
-      new window.google.maps.Map(ref.current, {center, zoom});
-  });
+    if (ref.current) {
+      const map = new window.google.maps.Map(ref.current, {
+        center: {lat: 40.1138069, lng: -88.2270992}, //UIUC coordinates
+        zoom: 3.5,
+      });
+      map.addListener('click', (e) => {
+        setMarkerData({map, position: e.latLng});
+      });
+    } else {
+      console.warn('not loaded');
+    }
+  }, [setMarkerData]);
 
-  return <div ref={ref} id={'map'}/>
+  return <div ref={ref} id='map'/>
 }
 
-export default Map;
+const Marker = ({data}) => {
+  useEffect(() => {
+    const marker = new window.google.maps.Marker();
+    marker.setOptions(data);
+
+    return () => {
+      if (marker)
+        marker.setMap(null);
+    }
+  }, [data]);
+}
+
+export default LocationPage;
