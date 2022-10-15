@@ -4,6 +4,7 @@ import numpy as np
 import meteostat
 import pvlib
 import requests
+import metpy.calc as mpcalc
 class Location:
     """
     Location that user picked and the weather + solar parameters for that location
@@ -33,8 +34,7 @@ class Location:
         station = stations.fetch(1)
         
         hourly_data = meteostat.Hourly(station, self.start, self.end).fetch()
-        average_values = hourly_data.mean().dropna()
-        self.weather_df = pd.DataFrame(average_values)
+        self.weather_df = hourly_data
     def get_solar_data(self):
         """
         """
@@ -49,15 +49,15 @@ class Location:
     def get_avg_air_temp(self) -> float:
         """
         """
-        return self.weather_df['temp'].values[0]
+        return self.weather_df['temp'].mean()
     def get_avg_humidity(self) -> float:
         """
         """
-        return self.weather_df['rhum'].values[0]
+        return self.weather_df['rhum'].mean()
     def get_avg_barometric_pressure(self) -> float:
         """
         """
-        return self.weather_df['pres'].values[0]
+        return self.weather_df['pres'].mean()
     def get_altitude(self) -> float:
         """
         Adapted from https://stackoverflow.com/questions/19513212/can-i-get-the-altitude-with-geopy-in-python-with-longitude-latitude
@@ -70,9 +70,9 @@ class Location:
     def get_avg_wind_speed(self) -> float:
         """
         """
-        return self.weather_df['wspd'].values[0]
+        return self.weather_df['wspd'].mean()
     def get_avg_air_density(self) -> float:
         """
         """
-        return 0.0
+        return mpcalc.density(self.get_avg_air_pressure(), self.get_avg_air_temp(), self.get_avg_humidity())
         
