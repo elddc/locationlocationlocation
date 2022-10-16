@@ -28,15 +28,19 @@ class Location:
         for column in columns_used:
             if (weather_df[column].isnull().all()):
                 return True
-        return false
+        return False
     def get_weather_data(self):
         """
         """
         stations = meteostat.Stations()
         stations = stations.nearby(self.lat, self.lon)
         station = stations.fetch(1)
+        i = 1
         hourly_data = meteostat.Hourly(station, self.start, self.end).fetch()
-        
+        while self.nan_weather(hourly_data):
+            station = stations.fetch(i+1)
+            hourly_data = meteostat.Hourly(station, self.start, self.end).fetch()
+            i+=1
         return hourly_data
     def get_solar_data(self):
         """
