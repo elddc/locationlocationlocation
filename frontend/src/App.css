@@ -5,7 +5,14 @@
   text-align: center;
   margin: 20px;
 }
-
+#radius-slider {
+  width: 50vw;
+}
+button {
+  background-color: lightgray;
+  padding: 2px 6px;
+  border: none;
+}
 #map {
   overflow: auto !important;
   height: 500px;
