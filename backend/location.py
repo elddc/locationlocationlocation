@@ -1,4 +1,5 @@
 import datetime
+from operator import truediv
 import pandas as pd
 import numpy as np 
 import meteostat
@@ -22,13 +23,12 @@ class Location:
         self.air_density = self.get_avg_air_density()
     def get_area(self) -> float:
         return np.pi * self.radius**2 
-    def change_station_if_nan(self, weather_df, stations, index):
-        """
-        """
+    def nan_weather(self, weather_df):
         columns_used = ['temp', 'rhum', 'pres', 'wspd']
         for column in columns_used:
             if (weather_df[column].isnull().all()):
-                station = stations.fetch(
+                return True
+        return false
     def get_weather_data(self):
         """
         """
