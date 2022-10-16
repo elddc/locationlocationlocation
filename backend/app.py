@@ -17,11 +17,24 @@ def locationlocationlocation():
     print(power_report.get_corn_power())
     print(type(power_report.get_corn_power()))
 
+    
+    powers = {
+        'solar': power_report.get_solar_power(),
+        'wind': power_report.get_wind_power(),
+        'nuclear': power_report.get_nuclear_power(),
+        'corn': power_report.get_corn_power()
+    }
+
+    sorted_powers = dict(sorted(powers.items(), key=lambda powers: powers[1]))
+    
+    ranking = []
+    for key, value in sorted_powers.items():
+        ranking.append(key)
     response = {
         'solar': power_report.get_solar_power(),
         'wind': power_report.get_wind_power(),
         'nuclear': power_report.get_nuclear_power(),
         'corn': power_report.get_corn_power(),
+        'ranking': ranking
     }
-
     return response

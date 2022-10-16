@@ -47,9 +47,4 @@ class power:
         """
         gals_per_square_meter = 328 / 4047
         return self.location.area * gals_per_square_meter / 3412000 * 8760
-    def sort_power(self) -> list:
-        """
-        """
-        sorted = sorted([self.solar, self.wind, self.nuclear, self.corn], reverse=True)
-        return 
 
