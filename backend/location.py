@@ -14,19 +14,14 @@ class Location:
         self.lat = lat
         self.lon = lon
         self.radius = radius
-        self.area = 0.0
-        self.weather_df = None
-        self.solar_df = None
-        self.start = datetime.datetime(2005, 1, 1)
+        self.start = datetime.datetime(2010, 1, 1)
         self.end = datetime.datetime(2015, 12, 31)
-        self.get_area()
-        self.get_weather_data()
-        self.get_solar_data()
-    def get_area(self):
-        """
-        Calculate the area of the circle
-        """
-        self.area = np.pi * self.radius**2 * units('m^2')
+        self.area = self.get_area()
+        self.weather_df = self.get_weather_data()
+        self.solar_df = self.get_solar_data()
+        self.air_density = self.get_avg_air_density()
+    def get_area(self) -> float:
+        return np.pi * self.radius**2 
     def get_weather_data(self):
         """
         """
@@ -35,18 +30,14 @@ class Location:
         station = stations.fetch(1)
         
         hourly_data = meteostat.Hourly(station, self.start, self.end).fetch()
-        self.weather_df = hourly_data
+        return hourly_data
     def get_solar_data(self):
         """
         """
         # assuming conversion efficiency of 15% for solar panels
         peakpower = self.area * 0.15
-        df = pvlib.iotools.get_pvgis_hourly(latitude=self.lat, longitude=self.lon, start=self.start, end=self.end)#,pvcalculation=True, peakpower=peakpower, loss=26.0, map_variables=True)
-        self.solar_df = df
-    def get_avg_irradiance(self) -> float:
-        """
-        """
-        return 0.0
+        df, _, _= pvlib.iotools.get_pvgis_hourly(latitude=self.lat, longitude=self.lon, start=self.start, end=self.end,pvcalculation=True, peakpower=peakpower, loss=26)
+        return df
     def get_avg_air_temp(self) -> float:
         """
         """
@@ -71,10 +62,9 @@ class Location:
     def get_avg_wind_speed(self) -> float:
         """
         """
-        return self.weather_df['wspd'].mean() * units('km/h')
+        return (self.weather_df['wspd'].mean() * units('km/h')).to('m/s')
     def get_avg_air_density(self) -> float:
         """
         """
-
         return mpcalc.density(self.get_avg_barometric_pressure(), self.get_avg_air_temp(), self.get_avg_humidity())
         
