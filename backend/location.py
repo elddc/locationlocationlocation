@@ -66,5 +66,5 @@ class Location:
         """
         """
         output_in_units = mpcalc.density((self.get_avg_barometric_pressure() * units('hPa')), (self.get_avg_air_temp() * units('celsius')), (self.get_avg_humidity() * units('percent')))
-        unitless = float(str(output_in_units).replace('kilometer / meter ** 3', ''))
+        unitless = float(str(output_in_units).replace('kilogram / meter ** 3', ''))
         return unitless
