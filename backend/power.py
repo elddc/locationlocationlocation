@@ -15,9 +15,9 @@ class power:
         #https://www.vestas.com/en/products-and-solutions/wind-turbines/vestas-v90-2-mw
         # Project Development Report Bartlett Towers By Prosim Power Virginia Tech 
         
-        swept_area = np.pi * (90/2)**2
+        swept_area = np.pi * (90/2)**2 * units('m^2')
         land_req = 52 * units('m^2')
-        num_turbines = self.location.area / land_req
+        num_turbines = np.floor(self.location.area * units('m^2') / land_req)
         ideal_power_per_turbine = 0.5 * self.location.air_density * swept_area * (self.location.get_avg_wind_speed()**3)
         
         #real efficiency from https://www.omnicalculator.com/ecology/wind-turbine#:~:text=Calculate%20the%20available%20wind%20power,change%20it%20in%20advanced%20mode)
@@ -35,10 +35,9 @@ class power:
         return real_power.to('MW')
     def get_nuclear_power(self) -> float:
         """
+        https://www.nei.org/news/2022/nuclear-brings-more-electricity-with-less-land#:~:text=A%20nuclear%20energy%20facility%20has,sites%20in%20the%20United%20States.
         """
-        return 0.0
-    def get_geothermal_power(self) -> float:
-        """
-        """
-        return 0.0
+        land_ratio = (1000 / 1.3 * units('MW / mi^2')).to('MW / m^2')
+        return self.location.area * units('m^2') * land_ratio
+ 
     
