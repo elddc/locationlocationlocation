@@ -2,36 +2,39 @@ import {Wrapper, Status} from '@googlemaps/react-wrapper';
 import {useState, useRef, useEffect} from 'react';
 import './App.css';
 
-// get latitude with data.position.lat();
-// get longitude with data.position.lng();
-
 const App = () => {
 	const [data, setData] = useState(null);
 	const [radius, setRadius] = useState(1000);
+	const [energyReport, setEnergyReport] = useState(null);
 
 	const render = (status) => {
 		if (status !== Status.SUCCESS)
 			return 'loading';
 	}
 
-	const sendData = () => {
+	const sendData = async () => {
+		console.log('generating report');
+
 		let url = 'http://localhost:5000/locationlocationlocation';
 		url += '?lat=' + data.position.lat();
 		url += '&lng=' + data.position.lng();
 		url += '&rad=' + radius;
-		fetch(url)
-		.then((res) => res.json())
-		.then(data => {console.log(data)});
+		const response = await fetch(url);
+		const report = await response.json();
+
+		console.log(report);
+		setEnergyReport(report);
 	}
 
 	return (
 		<div className='App'>
-			<Wrapper apiKey={'AIzaSyBZUH8Ld_4GB9ct-Vc-rLDV_fBMQFm2pKs'} render={render}>
-				<Map setData={setData}/>
-				{data && <Marker data={data} radius={radius}/>}
-			</Wrapper>
+		    <div className={energyReport && 'scoot-left'}>
+		        <Wrapper apiKey={'AIzaSyBZUH8Ld_4GB9ct-Vc-rLDV_fBMQFm2pKs'} render={render}>
+                    <Map setData={setData}/>
+                    {data && <Marker data={data} radius={radius}/>}
+                </Wrapper>
+		    </div>
 			<div className='input'>
-				Click to set location <br/>
 				Slide to set radius: {radius} meters
 				<input type='range'
 				       id='radius-slider'
@@ -45,8 +48,11 @@ const App = () => {
 				Area: {(radius * radius * 3.14).toLocaleString('en-US', {
 				maximumSignificantDigits: 3,
 			})} square meters<br/>
-				<button onClick={sendData} disabled={!data}>Generate report</button>
+				<button onClick={sendData} disabled={!data}>
+					{data ? 'Location location location!' : 'Click map to set location'}
+				</button>
 			</div>
+			<Result data={energyReport}/>
 		</div>
 	);
 }
@@ -94,6 +100,26 @@ const Marker = ({data, radius}) => {
 				circle.setMap(null);
 		}
 	}, [data, radius]);
+}
+
+const Result = ({data}) => {
+	return (
+		<div className={data && 'output'}>
+			{data && Object.keys(data).map((energySource) => (
+				<div className="energy-card" key={energySource}>
+					<img src={'/' + energySource + '.png'} className='icon'/>
+					<div>
+					    <div className="big-text">
+						    {energySource.charAt(0).toUpperCase() + energySource.slice(1)} power
+						</div>
+    					{data[energySource].toLocaleString('en-US', {
+    						maximumSignificantDigits: 3,
+    					})} megawatts
+					</div>
+				</div>
+			))}
+		</div>
+	)
 }
 
 export default App;

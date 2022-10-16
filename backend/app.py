@@ -15,9 +15,13 @@ def locationlocationlocation():
 
     power_report = power(Location(latitude, longitude, radius))
     print(power_report.get_corn_power())
+    print(type(power_report.get_corn_power()))
 
     response = {
-        "Energy" : "Wind"
+        'solar': power_report.get_solar_power(),
+        'wind': power_report.get_wind_power(),
+        'nuclear': power_report.get_nuclear_power(),
+        'corn': power_report.get_corn_power(),
     }
 
     return response

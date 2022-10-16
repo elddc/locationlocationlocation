@@ -16,6 +16,18 @@ html, body, #root {
     text-align: center;
     padding: 20px;
     background-color: white;
+    width: 300px;
+    border-radius: 2px;
+    box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
+}
+.output {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 100%;
+    background-color: white;
+    padding: 20px;
 }
 #radius-slider {
     width: 80%;
@@ -32,5 +44,23 @@ button {
     width: 100%;
     position: absolute;
     top: 0;
-    bottom: 0;
+    left: 0;
+}
+.scoot-left #map {
+    width: calc(100% - 350px);
+}
+.energy-card {
+    display: flex;
+    margin: 50px 10px;
+}
+.energy-card > div {
+    margin-left: 20px;
+}
+.icon {
+    height: 60px;
+    width: 60px;
+}
+.big-text {
+    font-size: 1.2em;
+    font-weight: bold;
 }
