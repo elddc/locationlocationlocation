@@ -19,7 +19,7 @@ class power:
         land_req = 52 * units('m^2')
         num_turbines = np.floor(self.location.area * units('m^2') / land_req)
         ideal_power_per_turbine = 0.5 * self.location.air_density * swept_area * (self.location.get_avg_wind_speed()**3)
-        
+
         #real efficiency from https://www.omnicalculator.com/ecology/wind-turbine#:~:text=Calculate%20the%20available%20wind%20power,change%20it%20in%20advanced%20mode)
         turbine_efficiency = 0.3
         wake_losses = 0.1
@@ -27,17 +27,18 @@ class power:
         turbine_electrical_losses = 0.015
         trans_electrical_losses = 0.1
         time_ooo = 0.03
-        
+
         real_efficiency = turbine_efficiency * (1 - wake_losses) * (1 - mechanical_losses) * (1 - turbine_electrical_losses) * (1 - trans_electrical_losses) * (1 - time_ooo)
-        
+
         real_power_per_turbine = ideal_power_per_turbine * real_efficiency
         real_power = real_power_per_turbine * num_turbines
         return real_power.to('MW')
     def get_nuclear_power(self) -> float:
-        """
-        https://www.nei.org/news/2022/nuclear-brings-more-electricity-with-less-land#:~:text=A%20nuclear%20energy%20facility%20has,sites%20in%20the%20United%20States.
-        """
         land_ratio = (1000 / 1.3 * units('MW / mi^2')).to('MW / m^2')
         return self.location.area * units('m^2') * land_ratio
- 
-    
+    def get_corn_power(self) -> float:
+        """
+        """
+        gals_per_square_meter = 328 / 4047
+        return self.location.area * gals_per_square_meter / 3412000 * 8760
+
