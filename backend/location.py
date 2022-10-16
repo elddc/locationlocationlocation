@@ -38,19 +38,19 @@ class Location:
         peakpower = self.area * 0.15
         df, _, _= pvlib.iotools.get_pvgis_hourly(latitude=self.lat, longitude=self.lon, start=self.start, end=self.end,pvcalculation=True, peakpower=peakpower, loss=26)
         return df
-    def get_avg_air_temp(self) -> float:
+    def get_avg_air_temp(self):
         """
         """
-        return self.weather_df['temp'].mean() * units('celsius')
-    def get_avg_humidity(self) -> float:
+        return self.weather_df['temp'].mean()
+    def get_avg_humidity(self):
         """
         """
-        return self.weather_df['rhum'].mean() * units('percent')
-    def get_avg_barometric_pressure(self) -> float:
+        return self.weather_df['rhum'].mean()
+    def get_avg_barometric_pressure(self):
         """
         """
-        return self.weather_df['pres'].mean() * units('hPa')
-    def get_altitude(self) -> float:
+        return self.weather_df['pres'].mean()
+    def get_altitude(self):
         """
         Adapted from https://stackoverflow.com/questions/19513212/can-i-get-the-altitude-with-geopy-in-python-with-longitude-latitude
         """
@@ -59,12 +59,13 @@ class Location:
         # one approach is to use pandas json functionality:
         altitude = pd.json_normalize(r, 'results')['elevation'].values[0]
         return altitude * units('m')
-    def get_avg_wind_speed(self) -> float:
+    def get_avg_wind_speed(self):
         """
         """
-        return (self.weather_df['wspd'].mean() * units('km/h')).to('m/s')
-    def get_avg_air_density(self) -> float:
+        return self.weather_df['wspd'].mean() / 3.6
+    def get_avg_air_density(self):
         """
         """
-        return mpcalc.density(self.get_avg_barometric_pressure(), self.get_avg_air_temp(), self.get_avg_humidity())
-        
+        output_in_units = mpcalc.density((self.get_avg_barometric_pressure() * units('hPa')), (self.get_avg_air_temp() * units('celsius')), (self.get_avg_humidity() * units('percent')))
+        unitless = float(str(output_in_units).replace('kg / m3', ''))
+        return unitless
