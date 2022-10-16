@@ -7,7 +7,7 @@ class power:
     def get_solar_power(self) -> float:
         """
         """
-        return self.location.solar_df['P'].mean() / 1000 * units('MW')
+        return self.location.solar_df['P'].mean() / 1000
     def get_wind_power(self) -> float:
         """
         """
@@ -32,10 +32,14 @@ class power:
 
         real_power_per_turbine = ideal_power_per_turbine * real_efficiency
         real_power = real_power_per_turbine * num_turbines
-        return real_power.to('MW')
+        output = real_power.to('MW')
+        output_as_float = float(str(output).replace("megawatt", ""))
+        return output_as_float
     def get_nuclear_power(self) -> float:
         land_ratio = (1000 / 1.3 * units('MW / mi^2')).to('MW / m^2')
-        return self.location.area * units('m^2') * land_ratio
+        output = self.location.area * units('m^2') * land_ratio
+        output_as_float = float(str(output).replace("megawatt", ""))
+        return output_as_float
     def get_corn_power(self) -> float:
         """
         """
