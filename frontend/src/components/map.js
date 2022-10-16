@@ -13,12 +13,14 @@ const LocationPage = () => {
       return 'loading';
   }
 
-  const sendData = async () => {
-    console.log(await fetch('/locationlocationlocation'), {
-      latitude: data.position.lat(),
-      longitiude: data.position.lng(),
-      radius,
-    });
+  const sendData = () => {
+    let url = 'http://localhost:5000/locationlocationlocation';
+    url += '?lat=' + data.position.lat();
+    url += '&lng=' + data.position.lng();
+    url += '&rad=' + radius;
+    fetch(url)
+      .then((res) => res.json())
+      .then(data => {console.log(data)});
   }
 
   return (
@@ -34,7 +36,7 @@ const LocationPage = () => {
                setRadius(ev.target.value);
              }}
       />
-      Area: {(radius * 3.14).toLocaleString('en-US', {
+      Area: {(radius^2 * 3.14).toLocaleString('en-US', {
           maximumSignificantDigits: 3,
       })} square meters<br/>
       <button onClick={sendData} disabled={!data}>Generate report</button>
@@ -70,7 +72,6 @@ const Marker = ({data, radius}) => {
     const marker = new window.google.maps.Marker();
     marker.setOptions(data);
 
-    //todo slider --o------ to change radius
     const circle = new window.google.maps.Circle({
       strokeColor: '#EA4335',
       strokeOpacity: 0.9,
