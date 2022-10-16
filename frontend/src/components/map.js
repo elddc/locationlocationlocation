@@ -13,6 +13,14 @@ const LocationPage = () => {
       return 'loading';
   }
 
+  const sendData = async () => {
+    console.log(await fetch('/locationlocationlocation'), {
+      latitude: data.position.lat(),
+      longitiude: data.position.lng(),
+      radius,
+    });
+  }
+
   return (
     <Wrapper apiKey={'AIzaSyBZUH8Ld_4GB9ct-Vc-rLDV_fBMQFm2pKs'} render={render}>
       Click to set location <br/>
@@ -29,6 +37,7 @@ const LocationPage = () => {
       Area: {(radius * 3.14).toLocaleString('en-US', {
           maximumSignificantDigits: 3,
       })} square meters<br/>
+      <button onClick={sendData} disabled={!data}>Generate report</button>
       <br/>
       <Map setData={setData}/>
       {data && <Marker data={data} radius={radius}/>}
