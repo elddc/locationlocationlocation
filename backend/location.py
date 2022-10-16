@@ -22,6 +22,13 @@ class Location:
         self.air_density = self.get_avg_air_density()
     def get_area(self) -> float:
         return np.pi * self.radius**2 
+    def change_station_if_nan(self, weather_df, stations, index):
+        """
+        """
+        columns_used = ['temp', 'rhum', 'pres', 'wspd']
+        for column in columns_used:
+            if (weather_df[column].isnull().all()):
+                station = stations.fetch(
     def get_weather_data(self):
         """
         """
@@ -29,6 +36,7 @@ class Location:
         stations = stations.nearby(self.lat, self.lon)
         station = stations.fetch(1)
         hourly_data = meteostat.Hourly(station, self.start, self.end).fetch()
+        
         return hourly_data
     def get_solar_data(self):
         """

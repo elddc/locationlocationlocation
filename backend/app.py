@@ -1,3 +1,4 @@
+from audioop import reverse
 from flask import Flask, request
 from flask_cors import CORS
 
@@ -25,7 +26,7 @@ def locationlocationlocation():
         'corn': power_report.get_corn_power()
     }
 
-    sorted_powers = dict(sorted(powers.items(), key=lambda powers: powers[1]))
+    sorted_powers = dict(sorted(powers.items(), key=lambda powers: powers[1]), reverse=True)
     
     ranking = []
     for key, value in sorted_powers.items():
