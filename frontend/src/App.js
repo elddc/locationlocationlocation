@@ -6,6 +6,7 @@ const App = () => {
 	const [data, setData] = useState(null);
 	const [radius, setRadius] = useState(1000);
 	const [energyReport, setEnergyReport] = useState(null);
+	const [loading, setLoading] = useState(false);
 
 	const render = (status) => {
 		if (status !== Status.SUCCESS)
@@ -14,6 +15,7 @@ const App = () => {
 
 	const sendData = async () => {
 		console.log('generating report');
+		setLoading(true);
 
 		let url = 'http://localhost:5000/locationlocationlocation';
 		url += '?lat=' + data.position.lat();
@@ -23,11 +25,13 @@ const App = () => {
 		const report = await response.json();
 
 		console.log(report);
+		setLoading(false);
 		setEnergyReport(report);
 	}
 
 	return (
 		<div className='App'>
+			<Loading active={loading} />
 		    <div className={energyReport && 'scoot-left'}>
 		        <Wrapper apiKey={'AIzaSyBZUH8Ld_4GB9ct-Vc-rLDV_fBMQFm2pKs'} render={render}>
                     <Map setData={setData}/>
@@ -52,7 +56,7 @@ const App = () => {
 					{data ? 'Location location location!' : 'Click map to set location'}
 				</button>
 			</div>
-			<Result data={energyReport}/>
+			<Result report={energyReport}/>
 		</div>
 	);
 }
@@ -102,24 +106,38 @@ const Marker = ({data, radius}) => {
 	}, [data, radius]);
 }
 
-const Result = ({data}) => {
+const Result = ({report}) => {
+	if (!report)
+		return false;
+
+	const {ranking, ...data} = report;
+
 	return (
-		<div className={data && 'output'}>
-			{data && Object.keys(data).map((energySource) => (
-				<div className="energy-card" key={energySource}>
-					<img src={'/' + energySource + '.png'} className='icon'/>
-					<div>
-					    <div className="big-text">
-						    {energySource.charAt(0).toUpperCase() + energySource.slice(1)} power
-						</div>
-    					{data[energySource].toLocaleString('en-US', {
-    						maximumSignificantDigits: 3,
-    					})} megawatts
-					</div>
-				</div>
-			))}
+		<div className='output'>
+			<div>{data && ranking.map((energySource, index) => {
+                console.log(index === 0);
+                return (
+                    <div className={(index === 0 ? 'best-option ' : '') + 'energy-card'} key={index}>
+                        <img src={'/' + energySource + '.png'} className='icon' alt={energySource}/>
+                        <div>
+                            <div className='big-text'>
+                                {energySource.charAt(0).toUpperCase() + energySource.slice(1)} power
+                            </div>
+                            {data[energySource].toLocaleString('en-US', {
+                                maximumSignificantDigits: 3,
+                            })} megawatts
+                        </div>
+                    </div>
+                )
+            })}</div>
 		</div>
 	)
+}
+
+const Loading = ({active}) => {
+	return (active && <div className='loading'>
+		<img src='/loading.gif' alt='loading'/>
+	</div>);
 }
 
 export default App;

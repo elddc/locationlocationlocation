@@ -18,7 +18,7 @@ html, body, #root {
     background-color: white;
     width: 300px;
     border-radius: 2px;
-    box-shadow: rgb(0 0 0 / 30%) 0px 1px 4px -1px;
+    box-shadow: rgb(0 0 0 / 30%) 0 1px 4px -1px;
 }
 .output {
     position: fixed;
@@ -27,7 +27,12 @@ html, body, #root {
     width: 300px;
     height: 100%;
     background-color: white;
-    padding: 20px;
+    padding: 30px;
+    padding-left: 20px;
+    padding-top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 #radius-slider {
     width: 80%;
@@ -52,6 +57,7 @@ button {
 .energy-card {
     display: flex;
     margin: 50px 10px;
+    max-width: 270px;
 }
 .energy-card > div {
     margin-left: 20px;
@@ -63,4 +69,20 @@ button {
 .big-text {
     font-size: 1.2em;
     font-weight: bold;
+}
+.energy-card.best-option {
+    background-color: #FCE80566;
+    padding: 20px 10px;
+    margin: 30px 0;
+    border-radius: 10px;
+}
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    z-index: 5;
 }
