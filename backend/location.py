@@ -28,7 +28,6 @@ class Location:
         stations = meteostat.Stations()
         stations = stations.nearby(self.lat, self.lon)
         station = stations.fetch(1)
-        
         hourly_data = meteostat.Hourly(station, self.start, self.end).fetch()
         return hourly_data
     def get_solar_data(self):
@@ -67,5 +66,5 @@ class Location:
         """
         """
         output_in_units = mpcalc.density((self.get_avg_barometric_pressure() * units('hPa')), (self.get_avg_air_temp() * units('celsius')), (self.get_avg_humidity() * units('percent')))
-        unitless = float(str(output_in_units).replace('kg / m3', ''))
+        unitless = float(str(output_in_units).replace('kilometer / meter ** 3', ''))
         return unitless
